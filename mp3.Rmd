@@ -21,9 +21,9 @@ download.file(url, destfile = local_file)
 unzip(local_file, exdir = "conway_contours")
 
 url <- "http://download.massgis.digital.mass.gov/shapefiles/contours5k/hp337.zip"
-local_file <- basename(url)
+local_file1 <- basename(url)
 download.file(url, destfile = local_file)
-unzip(local_file, exdir = "whately_contours")
+unzip(local_file1, exdir = "whately_contours")
 
 macleish_layers[["trails"]]
 
@@ -32,6 +32,17 @@ macleish_layers[["trails"]]
 #Existing trails shapefile
 #10’ contour elevation data
 
+names(macleish_layers)
 
+library(sf)
+
+con2 <- path.expand("whately_contours")
+con2
+list.files(con2)
+
+st_layers(con2)
+
+whatecon2 <- read_sf(con2)
+whatecon2
 ```
 
