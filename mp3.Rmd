@@ -21,12 +21,31 @@ download.file(url, destfile = local_file)
 unzip(local_file, exdir = "conway_contours")
 
 url <- "http://download.massgis.digital.mass.gov/shapefiles/contours5k/hp337.zip"
-local_file <- basename(url)
+local_file1 <- basename(url)
 download.file(url, destfile = local_file)
-unzip(local_file, exdir = "whately_contours")
+unzip(local_file1, exdir = "whately_contours")
 
-macleish_layers[["trails"]]
+library(sf)
+dsn <- path.expand("conway_contours")
+dsn
+list.files(dsn)
 
+st_layers(dsn)
+
+trails <- read_sf(dsn)
+trails
+
+
+dsn1 <- path.expand("whately_contours")
+dsn1
+list.files(dsn1)
+
+st_layers(dsn1)
+
+trails <- read_sf(dsn1)
+trails
+
+library(macleish)
 #MacLeish has approximately four miles of built trail for use by field station visitors. We would like to be able to classify these trails as “Easy,” “Moderate,” or “Difficult” based on their length and change in elevation. Use the spatial data to develop a heuristic that will classify these (or any other) trails based on their difficulty.
 #Supporting data includes:
 #Existing trails shapefile
