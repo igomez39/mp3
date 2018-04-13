@@ -1,23 +1,39 @@
 ---
 title: "mp3"
-author: "Selina Ho"
+author: "Selina Ho & Isabel Gomez"
 date: "April 9, 2018"
 output: html_document
 ---
-
+#MacLeish has approximately four miles of built trail for use by field station visitors. We would like to be able to classify these trails as “Easy,” “Moderate,” or “Difficult” based on their length and change in elevation. Use the spatial data to develop a heuristic that will classify these (or any other) trails based on their difficulty.
+#Supporting data includes:
+#Existing trails shapefile
+#10’ contour elevation data
+```
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(leaflet)
 library(sf)
+<<<<<<< HEAD
+=======
+library(macleish)
+>>>>>>> 61eb4ffdf4e6c10ee85cdf9ef9ff34d13973b7df
 
 install.packages("sf")
 
 devtools::install_github("beanumber/macleish")
 
-library(macleish)
 
+?macleish_layers
+rm(macleish_layers)
+devtools::install_github("beanumber/macleish")
+
+library(macleish)
+packageVersion("macleish")
+names(macleish_layers)
+
+<<<<<<< HEAD
 names(macleish_layers)
 
 macleish_layers[["buildings"]]
@@ -36,14 +52,23 @@ url <- "http://download.massgis.digital.mass.gov/shapefiles/contours5k/hp337.zip
 local_file1 <- basename(url)
 download.file(url, destfile = local_file)
 unzip(local_file1, exdir = "whately_contours")
+=======
 
-macleish_layers[["trails"]]
+leaflet(data = trail_lengths) %>%
+  addTiles() %>%
+  addPolylines()
+trail_lengths <-(macleish_layers[["trails"]]) %>%
+    group_by(name) %>%
+    summarize() %>%
+  mutate(computed_length = st_length(geometry))
+>>>>>>> 61eb4ffdf4e6c10ee85cdf9ef9ff34d13973b7df
 
-#MacLeish has approximately four miles of built trail for use by field station visitors. We would like to be able to classify these trails as “Easy,” “Moderate,” or “Difficult” based on their length and change in elevation. Use the spatial data to develop a heuristic that will classify these (or any other) trails based on their difficulty.
-#Supporting data includes:
-#Existing trails shapefile
-#10’ contour elevation data
+change_elevation <- (macleish_layers[["contours_30ft"]]) %>%
+  mutate(change_in_elevation = st_length(geometry))
 
+View(change_elevation)
+
+<<<<<<< HEAD
 names(macleish_layers)
 
 library(sf)
@@ -78,4 +103,38 @@ macleish_layers[["boundary"]] %>%
 forests <- macleish_layers[["forests"]] %>%
   rename(forest_type = Sheet1__Na)
 ```
+=======
+View(macleish_layers[["contours_30ft"]])
+
+trails_elevation <- st_join(trail_lengths,change_elevation)
+
+
+View(trails_elevation)
+
+trails_elevation_condensed <- trails_elevation %>%
+  group_by(name) %>%
+  summarize(elevation_change = sum(change_in_elevation), trail_length = mean(computed_length)) %>%
+  na.omit
+
+View(trails_elevation_condensed)
+
+st_bbox(bike_trails)
+leaflet() %>%
+  addTiles() %>%
+  addPolylines(data = trails_elevation_condensed)
+
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = trails_elevation_condensed$trail_length
+)
+trails_elevation_condensed_4326 <- trails_elevation_condensed %>%
+  st_transform(4326)
+trails_elevation_condensed_4326
+install.packages("viridisLite") 
+install.packages("viridis") 
+
+leaflet(data = trails_elevation_condensed) %>%
+  addTiles() %>%
+  addPolylines()
+>>>>>>> 61eb4ffdf4e6c10ee85cdf9ef9ff34d13973b7df
 
