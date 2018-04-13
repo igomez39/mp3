@@ -10,10 +10,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(leaflet)
+library(sf)
 
-install.packages("macleish")
+install.packages("sf")
+
+devtools::install_github("beanumber/macleish")
 
 library(macleish)
+
+names(macleish_layers)
+
+macleish_layers[["buildings"]]
+
+lapply(macleish_layers, class)
+
+macleish_layers[["buildings"]] %>%
+  plot()
 
 url <- "http://download.massgis.digital.mass.gov/shapefiles/contours5k/hp68.zip"
 local_file <- basename(url)
@@ -44,5 +56,26 @@ st_layers(con2)
 
 whatecon2 <- read_sf(con2)
 whatecon2
+
+#forests, streams, wetlands, boundary, trails
+streams_inside <- macleish_layers[["boundary"]] %>%
+  st_intersection(macleish_layers[["streams"]])
+
+trails_outside <- macleish_layers[["trails"]] %>%
+  st_difference(macleish_layers[["boundary"]])
+
+require(leaflet)
+m <- leaflet() %>%
+  addTiles() %>%
+  addPolylines(data = macleish_layers[["trails"]], weight = 1, color = "brown") %>%
+  addPolylines(data = macleish_layers[["streams"]], weight = 2) %>%
+    addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.01, group = "Boundaries")
+m
+
+macleish_layers[["boundary"]] %>%
+  st_area()
+
+forests <- macleish_layers[["forests"]] %>%
+  rename(forest_type = Sheet1__Na)
 ```
 
