@@ -75,3 +75,4 @@ leaflet(data = trails_elevation_condensed) %>%
   addTiles() %>%
   addPolylines()
 
+lol
