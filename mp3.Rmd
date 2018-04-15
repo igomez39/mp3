@@ -15,9 +15,6 @@ library(macleish)
 
 install.packages("macleish")
 
-
-?macleish_layers
-rm(macleish_layers)
 devtools::install_github("beanumber/macleish")
 
 library(macleish)
@@ -55,29 +52,36 @@ trails_elevation_condensed_andslope <- trails_elevation_condensed %>%
   mutate(slope = trail_length/elevation_change) %>%
   arrange(desc(trail_length))
 
+filtered_trails_elevation_condensed_andslope <- trails_elevation_condensed_andslope %>%
+  filter(name %in% c("Eastern Loop", "Western Loop", "Porcupine Trail", "Vernal Pool Loop", "Easy Out"))
+
 View(trails_elevation_condensed)
 
-st_bbox(bike_trails)
 leaflet() %>%
   addTiles() %>%
   addPolylines(data = trails_elevation_condensed)
 
-pal <- colorNumeric(
-  palette = "viridis",
-  domain = trails_elevation_condensed$trail_length
+pal1 <- colorFactor(
+  palette = "Blues",
+  domain = trails_elevation_condensed_andslope$name
 )
+
 trails_elevation_condensed_4326 <- trails_elevation_condensed %>%
   st_transform(4326)
 trails_elevation_condensed_4326
-install.packages("viridisLite") 
-install.packages("viridis") 
 
-leaflet(data = trails_elevation_condensed) %>%
+leaflet() %>%
   addTiles() %>%
-  addPolylines()
+  addPolylines(data = filtered_trails_elevation_condensed_andslope, color = ~pal3(name)) %>%
+    addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.01, group = "Boundaries", color = "brown") %>%
+  addMarkers(lng = ~lon, lat = ~lat, data = bechtel,
+             popup = "Bechtel Environmental Classroom")
 
-lol
+pal3 <- colorFactor(palette = c("#4b7fd8"), domain = filtered_trails_elevation_condensed_andslope$name)
 
-forests, streams, buildings, wetlands, boundary, trails, contours_3m
+#color for which trail, for difficulty, for slope, for length, 
+
+terrain(macleish_layers[["trails"]], opt=c('slope', 'aspect'), unit='degrees')
+
 ```
 
