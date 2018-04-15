@@ -50,6 +50,11 @@ trails_elevation_condensed <- trails_elevation %>%
   summarize(elevation_change = sum(change_in_elevation), trail_length = mean(computed_length)) %>%
   na.omit
 
+trails_elevation_condensed_andslope <- trails_elevation_condensed %>%
+  group_by(name) %>%
+  mutate(slope = trail_length/elevation_change) %>%
+  arrange(desc(trail_length))
+
 View(trails_elevation_condensed)
 
 st_bbox(bike_trails)
@@ -72,5 +77,7 @@ leaflet(data = trails_elevation_condensed) %>%
   addPolylines()
 
 lol
+
+forests, streams, buildings, wetlands, boundary, trails, contours_3m
 ```
 
