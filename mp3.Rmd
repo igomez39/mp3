@@ -75,9 +75,5 @@ install.packages("viridis")
 leaflet(data = trails_elevation_condensed) %>%
   addTiles() %>%
   addPolylines()
-
-lol
-
-forests, streams, buildings, wetlands, boundary, trails, contours_3m
 ```
 
