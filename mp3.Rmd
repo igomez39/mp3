@@ -1,79 +1,84 @@
 ---
 title: "mp3"
-author: "Selina Ho"
+author: "Selina Ho * Isabel Gomez"
 date: "April 9, 2018"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+##Load the packages
 
+```{r, include=TRUE}
 library(tidyverse)
 library(leaflet)
 library(sf)
 library(macleish)
+```
 
-install.packages("macleish")
-
-
-?macleish_layers
-rm(macleish_layers)
+##Install macleish if not already downloaded
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
 devtools::install_github("beanumber/macleish")
-
-library(macleish)
 packageVersion("macleish")
-names(macleish_layers)
+```
 
 
-leaflet(data = trail_lengths) %>%
-  addTiles() %>%
-  addPolylines()
+## Step1 is to aggregate the data of the trail lengths and elevation change into one data frame
+
+```{r, include=FALSE}
 trail_lengths <-(macleish_layers[["trails"]]) %>%
     group_by(name) %>%
     summarize() %>%
-  mutate(computed_length = st_length(geometry))
+    mutate(computed_length = st_length(geometry)) 
 
 change_elevation <- (macleish_layers[["contours_30ft"]]) %>%
   mutate(change_in_elevation = st_length(geometry))
 
-View(change_elevation)
-
-View(macleish_layers[["contours_30ft"]])
 
 trails_elevation <- st_join(trail_lengths,change_elevation)
 
-
-View(trails_elevation)
 
 trails_elevation_condensed <- trails_elevation %>%
   group_by(name) %>%
   summarize(elevation_change = sum(change_in_elevation), trail_length = mean(computed_length)) %>%
   na.omit
+```
+ 
+##Our next step is to ensure that is to map our data using leaflet
+```{r, include=TRUE}
 
-trails_elevation_condensed_andslope <- trails_elevation_condensed %>%
-  group_by(name) %>%
-  mutate(slope = trail_length/elevation_change) %>%
-  arrange(desc(trail_length))
-
-View(trails_elevation_condensed)
-
-st_bbox(bike_trails)
+st_bbox(macleish_layers[["trails"]])
 leaflet() %>%
   addTiles() %>%
   addPolylines(data = trails_elevation_condensed)
+```
+
+##BUFFER
+```{r, include=TRUE}
+proj4_aea <- "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"
+
+trails_buffer <- macleish_layers[["boundary"]] %>%
+  st_transform(proj4_aea) %>%
+  st_buffer(dist = 10) %>%
+  st_transform(4326)
 
 pal <- colorNumeric(
   palette = "viridis",
-  domain = trails_elevation_condensed$trail_length
+  domain = 
 )
-trails_elevation_condensed_4326 <- trails_elevation_condensed %>%
-  st_transform(4326)
-trails_elevation_condensed_4326
-install.packages("viridisLite") 
-install.packages("viridis") 
+trails_elevation_condensed$name <- factor(sample.int(9L, nrow(trails_elevation_condensed), TRUE))
 
-leaflet(data = trails_elevation_condensed) %>%
+factpal <- colorFactor(topo.colors(9), trails_elevation_condensed$name)
+
+
+leaflet() %>%
   addTiles() %>%
-  addPolylines()
+addPolylines(data = macleish_layers[["trails"]], weight = 3, color = ~"red")
+
+leaflet() %>%
+  addTiles() %>%
+  addPolylines(data = trails_elevation_condensed, 
+               weight = 1,stroke = FALSE, smoothFactor = 0.2, fillOpacity = 1,
+               color= ~factpal(name)) %>%
+  addPolygons(data = trails_buffer)
 ```
 
