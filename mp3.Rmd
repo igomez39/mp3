@@ -84,6 +84,8 @@ pal3 <- colorFactor(palette = c("#4b7fd8"), domain = filtered_trails_elevation_c
 
 terrain(macleish_layers[["trails"]], opt=c('slope', 'aspect'), unit='degrees')
 
+take
+
 =======
   addPolylines()
 >>>>>>> e06ff4e4534c939066c02b8ade3c92382cb99381
