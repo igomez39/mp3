@@ -14,9 +14,14 @@ library(sf)
 library(macleish)
 ```
 
+<<<<<<< HEAD
 ##Install macleish if not already downloaded
 ```{r setup, include=TRUE}
 knitr::opts_chunk$set(echo = TRUE)
+=======
+install.packages("macleish")
+
+>>>>>>> 699457491782df276d97f6499d3631e12b3b9a24
 devtools::install_github("beanumber/macleish")
 packageVersion("macleish")
 ```
@@ -46,7 +51,20 @@ trails_elevation_condensed <- trails_elevation %>%
 ##Our next step is to ensure that is to map our data using leaflet
 ```{r, include=TRUE}
 
+<<<<<<< HEAD
 st_bbox(macleish_layers[["trails"]])
+=======
+trails_elevation_condensed_andslope <- trails_elevation_condensed %>%
+  group_by(name) %>%
+  mutate(slope = trail_length/elevation_change) %>%
+  arrange(desc(trail_length))
+
+filtered_trails_elevation_condensed_andslope <- trails_elevation_condensed_andslope %>%
+  filter(name %in% c("Eastern Loop", "Western Loop", "Porcupine Trail", "Vernal Pool Loop", "Easy Out"))
+
+View(trails_elevation_condensed)
+
+>>>>>>> 699457491782df276d97f6499d3631e12b3b9a24
 leaflet() %>%
   addTiles() %>%
   addPolylines(data = trails_elevation_condensed)
@@ -61,6 +79,7 @@ trails_buffer <- macleish_layers[["boundary"]] %>%
   st_buffer(dist = 10) %>%
   st_transform(4326)
 
+<<<<<<< HEAD
 pal <- colorNumeric(
   palette = "viridis",
   domain = 
@@ -80,5 +99,35 @@ leaflet() %>%
                weight = 1,stroke = FALSE, smoothFactor = 0.2, fillOpacity = 1,
                color= ~factpal(name)) %>%
   addPolygons(data = trails_buffer)
+=======
+pal1 <- colorFactor(
+  palette = "Blues",
+  domain = trails_elevation_condensed_andslope$name
+)
+
+trails_elevation_condensed_4326 <- trails_elevation_condensed %>%
+  st_transform(4326)
+trails_elevation_condensed_4326
+
+leaflet() %>%
+  addTiles() %>%
+<<<<<<< HEAD
+  addPolylines(data = filtered_trails_elevation_condensed_andslope, color = ~pal3(name)) %>%
+    addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.01, group = "Boundaries", color = "brown") %>%
+  addMarkers(lng = ~lon, lat = ~lat, data = bechtel,
+             popup = "Bechtel Environmental Classroom")
+
+pal3 <- colorFactor(palette = c("#4b7fd8"), domain = filtered_trails_elevation_condensed_andslope$name)
+
+#color for which trail, for difficulty, for slope, for length, 
+
+terrain(macleish_layers[["trails"]], opt=c('slope', 'aspect'), unit='degrees')
+
+take
+
+=======
+  addPolylines()
+>>>>>>> e06ff4e4534c939066c02b8ade3c92382cb99381
+>>>>>>> 699457491782df276d97f6499d3631e12b3b9a24
 ```
 
