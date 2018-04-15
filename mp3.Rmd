@@ -111,7 +111,6 @@ trails_elevation_condensed_4326
 
 leaflet() %>%
   addTiles() %>%
-<<<<<<< HEAD
   addPolylines(data = filtered_trails_elevation_condensed_andslope, color = ~pal3(name)) %>%
     addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.01, group = "Boundaries", color = "brown") %>%
   addMarkers(lng = ~lon, lat = ~lat, data = bechtel,
