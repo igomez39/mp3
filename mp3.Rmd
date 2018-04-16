@@ -14,20 +14,23 @@ library(sf)
 library(macleish)
 ```
 
-<<<<<<< HEAD
+
 ##Install macleish if not already downloaded
 ```{r setup, include=TRUE}
 knitr::opts_chunk$set(echo = TRUE)
+<<<<<<< HEAD
 install.packages("macleish")
 
 devtools::install_github("beanumber/macleish")
 packageVersion("macleish")
+=======
+>>>>>>> 69f20b4a72af962d7d1af28aa54df32d4d9cfdce
 ```
 
 
 ## Step1 is to aggregate the data of the trail lengths and elevation change into one data frame
 
-```{r, include=FALSE}
+```{r, include=TRUE}
 trail_lengths <-(macleish_layers[["trails"]]) %>%
     group_by(name) %>%
     summarize() %>%
@@ -36,39 +39,37 @@ trail_lengths <-(macleish_layers[["trails"]]) %>%
 change_elevation <- (macleish_layers[["contours_30ft"]]) %>%
   mutate(change_in_elevation = st_length(geometry))
 
+change_elevation3ft <- (macleish_layers[["contours_3m"]]) %>%
+  mutate(change_in_elevation = st_length(geometry))
+
 
 trails_elevation <- st_join(trail_lengths,change_elevation)
+trails_elevation3m <- st_join(trail_lengths, change_elevation3ft)
 
+trails_elevation_condensed_andslope2 <-trails_elevation3m%>%
+  group_by(name) %>%
+  mutate(slope = computed_length/change_in_elevation) %>%
+  arrange(desc(computed_length))
+
+
+condensed_trails_elevation <- trails_elevation_condensed_andslope2 %>%
+  select(name, computed_length,change_in_elevation, slope, geometry)
+
+filter_trails_3m <- condensed_trails_elevation %>%
+  filter(name %in% c("Eastern Loop", "Western Loop", "Porcupine Trail", "Vernal Pool Loop", "Easy Out"))
 
 trails_elevation_condensed <- trails_elevation %>%
   group_by(name) %>%
   summarize(elevation_change = sum(change_in_elevation), trail_length = mean(computed_length)) %>%
   na.omit
 ```
- 
-##Our next step is to ensure that is to map our data using leaflet
-```{r, include=TRUE}
 
-<<<<<<< HEAD
-st_bbox(macleish_layers[["trails"]])
-=======
-trails_elevation_condensed_andslope <- trails_elevation_condensed %>%
-  group_by(name) %>%
-  mutate(slope = trail_length/elevation_change) %>%
-  arrange(desc(trail_length))
 
-filtered_trails_elevation_condensed_andslope <- trails_elevation_condensed_andslope %>%
-  filter(name %in% c("Eastern Loop", "Western Loop", "Porcupine Trail", "Vernal Pool Loop", "Easy Out"))
+```{r}
 
-View(trails_elevation_condensed)
-
->>>>>>> 699457491782df276d97f6499d3631e12b3b9a24
-leaflet() %>%
-  addTiles() %>%
-  addPolylines(data = trails_elevation_condensed)
+bechtel <- data.frame(lat = 42.449167, lon = -72.679389)
 ```
-
-##BUFFER
+##BUFFER & Color Pallete 
 ```{r, include=TRUE}
 proj4_aea <- "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"
 
@@ -77,6 +78,7 @@ trails_buffer <- macleish_layers[["boundary"]] %>%
   st_buffer(dist = 10) %>%
   st_transform(4326)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 pal <- colorNumeric(
   palette = "viridis",
@@ -107,25 +109,55 @@ leaflet() %>%
 trails_elevation_condensed_4326 <- trails_elevation_condensed %>%
   st_transform(4326)
 trails_elevation_condensed_4326
+=======
+pal1 <- colorFactor(
+  palette = c("darkorange","brown","red", "purple"),
+  domain = filter_trails_3m$name)
+```
+>>>>>>> 69f20b4a72af962d7d1af28aa54df32d4d9cfdce
 
+```{r, }
 leaflet() %>%
   addTiles() %>%
+<<<<<<< HEAD
   addPolylines(data = filtered_trails_elevation_condensed_andslope, color = ~pal1(name)) %>%
     addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.01, group = "Boundaries", color = "brown") %>%
+=======
+   addPolylines(data = filter_trails_3m, 
+               weight = 2, color = ~pal1(name)) %>%
+    addLegend("bottomright", pal = pal1, values =filter_trails_3m$name) %>%
+  addPolygons(data = trails_buffer, fill = FALSE) %>%
+>>>>>>> 69f20b4a72af962d7d1af28aa54df32d4d9cfdce
   addMarkers(lng = ~lon, lat = ~lat, data = bechtel,
              popup = "Bechtel Environmental Classroom")
+```
 
-pal3 <- colorFactor(palette = c("#4b7fd8"), domain = filtered_trails_elevation_condensed_andslope$name)
 
-#color for which trail, for difficulty, for slope, for length, 
+##Finding the most challenging one
 
-terrain(macleish_layers[["trails"]], opt=c('slope', 'aspect'), unit='degrees')
+```{r}
+challenges <- filter_trails_3m %>%
+  group_by(name) %>%
+  summarize(elevation_change = mean(change_in_elevation),
+  average_slope= mean(slope)) %>%
+  arrange(desc(average_slope))
+```
+#Mapping challenge to leaflet
 
+```{r}
+
+qpal <- colorNumeric("Blues", challenges$average_slope)
+
+<<<<<<< HEAD
 #plzhelp
-
 =======
-  addPolylines()
->>>>>>> e06ff4e4534c939066c02b8ade3c92382cb99381
->>>>>>> 699457491782df276d97f6499d3631e12b3b9a24
+leaflet () %>%
+  addTiles%>%
+   addPolylines(data = challenges,weight = 5, color = ~qpal(average_slope), popup = ~challenges$name) %>%
+    addLegend("bottomright", pal = qpal, values =challenges$average_slope) %>%
+  addPolygons(data = trails_buffer, weight = 1,fill = FALSE, color = "brown")
+>>>>>>> 69f20b4a72af962d7d1af28aa54df32d4d9cfdce
+
+?addLegend
 ```
 
