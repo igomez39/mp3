@@ -62,6 +62,19 @@ trails_elevation_condensed <- trails_elevation %>%
 
 bechtel <- data.frame(lat = 42.449167, lon = -72.679389)
 ```
+##BUFFER & Color Pallete 
+```{r, include=TRUE}
+proj4_aea <- "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"
+
+trails_buffer <- macleish_layers[["boundary"]] %>%
+  st_transform(proj4_aea) %>%
+  st_buffer(dist = 10) %>%
+  st_transform(4326)
+
+pal1 <- colorFactor(
+  palette = c("darkorange","brown","red", "purple"),
+  domain = filter_trails_3m$name)
+```
 
 ```{r, }
 leaflet() %>%
@@ -74,21 +87,7 @@ leaflet() %>%
              popup = "Bechtel Environmental Classroom")
 ```
 
-##BUFFER & Color Pallete 
-```{r, include=TRUE}
-proj4_aea <- "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"
 
-trails_buffer <- macleish_layers[["boundary"]] %>%
-  st_transform(proj4_aea) %>%
-  st_buffer(dist = 10) %>%
-  st_transform(4326)
-
-pal1 <- colorFactor(
-  palette = c("darkorange","blue", "red", "white", ""),
-  domain = trails_elevation_condensed_andslope$name
-)
-
-```
 ##Finding the most challenging one
 
 ```{r}
@@ -102,13 +101,14 @@ challenges <- filter_trails_3m %>%
 
 ```{r}
 
-qpal <- colorQuantile("Blues", challenges$average_slope, n=4)
+qpal <- colorNumeric("Blues", challenges$average_slope)
 
-                    
 leaflet () %>%
   addTiles%>%
-   addPolylines(data = challenges,weight = 2, color = ~pal2(average_slope))%>%
+   addPolylines(data = challenges,weight = 5, color = ~qpal(average_slope), popup = ~challenges$name) %>%
     addLegend("bottomright", pal = qpal, values =challenges$average_slope) %>%
-  addPolygons(data = trails_buffer, fill = FALSE)
+  addPolygons(data = trails_buffer, weight = 1,fill = FALSE, color = "brown")
+
+?addLegend
 ```
 
