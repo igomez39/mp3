@@ -2,21 +2,23 @@
 title: "mp3"
 author: "Selina Ho * Isabel Gomez"
 date: "April 9, 2018"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
 ---
 
 ##Load the packages
 
-```{r, include=TRUE}
+```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(leaflet)
 library(sf)
 library(macleish)
 ```
 
-
+<<<<<<< HEAD
 ##Install macleish if not already downloaded
-```{r setup, include=TRUE}
+```{r setup, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 <<<<<<< HEAD
 install.packages("macleish")
@@ -27,10 +29,18 @@ packageVersion("macleish")
 >>>>>>> 69f20b4a72af962d7d1af28aa54df32d4d9cfdce
 ```
 
+It’s the Climb: Rating Macleish’s Trails
+	
+The goal of our project[^1] is twofold: to figure out how to calculate factors that categorize difficulty, such as the slope of each trail and the discrepancies in that (average vs. specific changes) and to consider what length, elevation, and slope is easy, moderate, and difficult. We used the data frames within macleish package, specifically boundaries, trails, buildings, and contours_3m. We mutated trails to show length and joined it with contours_3m, then added another column showing the aggregate slope of each trail. In our leaflet map, we visualized slope for difficulty and added markers for each trail. We also added a marker for the Bechtel Environmental Classroom since van drivers often lead students to it as a starting point for all other activities. Other factors that affect difficulty are navigability, especially in various weather and maintenance conditions. During our visit to Macleish, we hiked the Western Loop, Porcupine Trail, and Vernal Pool Trail. On the Western Loop, there was a tree obstructing the trail ahead, causing us confusion as to where to proceed and on steeper inclines and declines, the remnants of snow lessened traction. Though these are not factors are not included in our data, they are worth further consideration, especially for hikers with less experience. Another factor that should be considered is the experience of people of differing abilities. As able-bodied people, our categorization probably does not fully scrutinize how slope affects accessibility. In our further research on current systems of trail categorization, other factors include terrain type, signposts, natural obstacles, and trail width. Factors that don’t affect difficulty of Macleish trails as much are terrain type and length since terrain type remains constant and length does not exceed 2 miles for any trail, which is considered an easy length. The Finnish Recreational Routes Classification System includes categories accessible by wheelchair: Easy Wheelchair Trail and Demanding Wheelchair Trail. This system provides a starting point for our effort to be considerate and inclusive of everyone’s abilities and needs.
+At the conclusion of further examination, Smith may be able to print a another version of the map. This will most likely have little to no impact on cost since whatever funds are used for printing the current version of trail maps can be used to print this version. There are no changes that need to be made to the actual trails themselves. It is also free and quick to upload another version of the trails map to the Macleish Field Station website. It will probably will not take more than a few weeks, after potential meetings with Professor Bertone-Johnson, students, and the Office of Disability Services and the approval of the former. There is no significant change in environmental impact caused by the addition of another map, assuming that there is no drastic increase in map printing. In contrast, there could be an overall reduction in map printing, since maps at Macleish Field Station can be used and returned or in the age of technology, students can just take a picture of it, download it, etc. We do not foresee any major roadblocks unless there is some major error we made in calculating the change in elevation and even that can be revised fairly quickly. 
+
+[^1]: https://github.com/igomez39/mp3
+
+
 
 ## Step1 is to aggregate the data of the trail lengths and elevation change into one data frame
 
-```{r, include=TRUE}
+```{r, message=FALSE}
 trail_lengths <-(macleish_layers[["trails"]]) %>%
     group_by(name) %>%
     summarize() %>%
@@ -65,12 +75,12 @@ trails_elevation_condensed <- trails_elevation %>%
 ```
 
 
-```{r}
+```{r, message=FALSE}
 
 bechtel <- data.frame(lat = 42.449167, lon = -72.679389)
 ```
 ##BUFFER & Color Pallete 
-```{r, include=TRUE}
+```{r, message=FALSE}
 proj4_aea <- "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"
 
 trails_buffer <- macleish_layers[["boundary"]] %>%
@@ -116,7 +126,7 @@ pal1 <- colorFactor(
 ```
 >>>>>>> 69f20b4a72af962d7d1af28aa54df32d4d9cfdce
 
-```{r, }
+```{r, message=FALSE}
 leaflet() %>%
   addTiles() %>%
 <<<<<<< HEAD
@@ -135,7 +145,7 @@ leaflet() %>%
 
 ##Finding the most challenging one
 
-```{r}
+```{r, message=FALSE}
 challenges <- filter_trails_3m %>%
   group_by(name) %>%
   summarize(elevation_change = mean(change_in_elevation),
@@ -144,7 +154,7 @@ challenges <- filter_trails_3m %>%
 ```
 #Mapping challenge to leaflet
 
-```{r}
+```{r, message=FALSE}
 
 qpal <- colorNumeric("Blues", challenges$average_slope)
 
