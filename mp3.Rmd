@@ -18,10 +18,8 @@ library(macleish)
 ##Install macleish if not already downloaded
 ```{r setup, include=TRUE}
 knitr::opts_chunk$set(echo = TRUE)
-=======
 install.packages("macleish")
 
->>>>>>> 699457491782df276d97f6499d3631e12b3b9a24
 devtools::install_github("beanumber/macleish")
 packageVersion("macleish")
 ```
@@ -100,9 +98,10 @@ leaflet() %>%
                color= ~factpal(name)) %>%
   addPolygons(data = trails_buffer)
 =======
-pal1 <- colorFactor(
+#COLOR FACTORSSSSS
+  pal1 <- colorFactor(
   palette = "Blues",
-  domain = trails_elevation_condensed_andslope$name
+  domain = filtered_trails_elevation_condensed_andslope$name
 )
 
 trails_elevation_condensed_4326 <- trails_elevation_condensed %>%
@@ -111,7 +110,7 @@ trails_elevation_condensed_4326
 
 leaflet() %>%
   addTiles() %>%
-  addPolylines(data = filtered_trails_elevation_condensed_andslope, color = ~pal3(name)) %>%
+  addPolylines(data = filtered_trails_elevation_condensed_andslope, color = ~pal1(name)) %>%
     addPolygons(data = macleish_layers[["boundary"]], weight = 1, fillOpacity = 0.01, group = "Boundaries", color = "brown") %>%
   addMarkers(lng = ~lon, lat = ~lat, data = bechtel,
              popup = "Bechtel Environmental Classroom")
@@ -122,7 +121,7 @@ pal3 <- colorFactor(palette = c("#4b7fd8"), domain = filtered_trails_elevation_c
 
 terrain(macleish_layers[["trails"]], opt=c('slope', 'aspect'), unit='degrees')
 
-take
+#plzhelp
 
 =======
   addPolylines()
